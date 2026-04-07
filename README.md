@@ -1,50 +1,113 @@
-# Welcome to your Expo app 👋
+# MiAppPagos 📱
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicación móvil desarrollada en **React Native con Expo** que consume datos desde la API REST del proyecto **PagosMoviles** y muestra la información en una lista.
 
-## Get started
+---
 
-1. Install dependencies
+## 📋 Descripción
 
-   ```bash
-   npm install
-   ```
+Esta aplicación forma parte del proyecto de Pagos Móviles. Conecta con el microservicio `UsuariosService` para obtener y mostrar la lista de usuarios registrados en el sistema.
 
-2. Start the app
+**Funcionalidades:**
+- Consumo de API REST (`GET /user`)
+- Visualización de usuarios en lista con `FlatList`
+- Avatar con inicial y color personalizado por usuario
+- Manejo de estados: cargando, error y datos
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## 🛠️ Tecnologías utilizadas
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- [React Native](https://reactnative.dev/)
+- [Expo](https://expo.dev/)
+- TypeScript
+- API REST: PagosMoviles.UsuariosService (.NET)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+----
 
-## Get a fresh project
+## ▶️ Requisitos previos
 
-When you're ready, run:
+Antes de correr el proyecto necesitás tener instalado:
+
+- [Node.js](https://nodejs.org/) (v18 o superior)
+- [Expo Go](https://expo.dev/go) en tu celular (Android o iOS)
+- El microservicio `PagosMoviles.UsuariosService` corriendo localmente
+
+---
+
+## 🚀 Cómo correr el proyecto
+
+### 1. Cloná el repositorio
 
 ```bash
-npm run reset-project
+git clone https://github.com/TU_USUARIO/MiAppPagos.git
+cd MiAppPagos
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Instalá las dependencias
 
-## Learn more
+```bash
+npm install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### 3. Configurá la URL de la API
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Abrí el archivo `app/usuarios.tsx` y cambiá la URL base:
 
-## Join the community
+```javascript
+// Para ver en navegador (web)
+const BASE_URL = 'http://localhost:5291';
 
-Join our community of developers creating universal apps.
+// Para ver en celular físico con Expo Go
+// Reemplazá con tu IP local (ejecutá ipconfig en Windows)
+const BASE_URL = 'http://192.168.X.X:5291';
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 4. Levantá el microservicio UsuariosService
+
+Abrí `PagosMoviles.UsuariosService` en Visual Studio y correlo con el perfil **http**.
+
+### 5. Iniciá la aplicación
+
+```bash
+npx expo start
+```
+
+### 6. Abrí la app
+
+| Plataforma | Instrucción |
+|---|---|
+| 🌐 Navegador | Presioná `w` en la terminal |
+| 📱 Celular | Escaneá el QR con la app Expo Go |
+| 🤖 Android Emulator | Presioná `a` en la terminal |
+
+> ⚠️ Para usar Expo Go en celular físico, el celular y la PC deben estar en el **mismo WiFi**.
+
+---
+
+## 📁 Estructura del proyecto
+
+```
+MiAppPagos/
+├── app/
+│   ├── (tabs)/         # Navegación por tabs
+│   ├── usuarios.tsx    # Pantalla principal - Lista de usuarios
+│   └── _layout.tsx     # Layout raíz
+├── assets/             # Imágenes y recursos
+├── components/         # Componentes reutilizables
+└── package.json
+```
+
+---
+
+## 📸 Capturas de pantalla
+
+> Agregá aquí capturas de pantalla de la app funcionando.
+
+---
+
+## 👤 Autor
+
+**Tu Nombre**  
+Curso: Desarrollo de Aplicaciones Móviles  
+Universidad: Tu Universidad
