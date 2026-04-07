@@ -76,8 +76,9 @@ export default function UsuariosScreen() {
                 {item.nombreCompleto?.charAt(0).toUpperCase()}
                 </Text>
             </View>
+            
             <View style={styles.info}>
-                //información del usuario: nombre completo, email, teléfono e identificación
+                
                 <Text style={styles.nombre}>{item.nombreCompleto}</Text>
                 <Text style={styles.campo}>📧 {item.email}</Text>
                 <Text style={styles.campo}>📱 {item.telefono}</Text>
