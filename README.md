@@ -103,11 +103,7 @@ MiAppPagos/
 ## 📸 Capturas de pantalla
 
 > Agregá aquí capturas de pantalla de la app funcionando.
+<img width="1911" height="703" alt="image" src="https://github.com/user-attachments/assets/fff0ffd8-161b-47f0-9119-81de925cd1d8" />
 
----
 
-## 👤 Autor
 
-**Tu Nombre**  
-Curso: Desarrollo de Aplicaciones Móviles  
-Universidad: Tu Universidad
