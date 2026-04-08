@@ -8,114 +8,135 @@ import {
     View,
 } from 'react-native';
 
-// URL base del microservicio UsuariosService
-const BASE_URL = 'http://localhost:5291';
+// URL base del microservicio UsuariosService (Apunta a la IP local de tu PC)
+const BASE_URL = 'http://192.168.1.16:5291';
 
 export default function UsuariosScreen() {
-    //estado para almacenar los datos obtenidos del API, el indicador de carga y los errores
+    // Estado para almacenar la lista de usuarios obtenida de la base de datos
     const [datos, setDatos] = useState<any[]>([]);
+    // Estado para controlar si la aplicación está esperando una respuesta del servidor
     const [cargando, setCargando] = useState(true);
+    // Estado para capturar y mostrar mensajes de error en caso de fallos
     const [error, setError] = useState<string | null>(null);
 
-    // useEffect se ejecuta una sola vez al montar el componente
+    // useEffect se ejecuta una sola vez al montar el componente para traer los datos
     useEffect(() => {
-        // Llamada al endpoint GET /user del microservicio
-    fetch(`${BASE_URL}/user`)
-        .then((res) => res.json())
-        .then((data) => {
-            // La API devuelve { codigo, descripcion, datos }
-        if (data.codigo === 200) {
-            setDatos(data.datos); // Guardamos los usuarios en el estado
-        } else {
-            setError(data.descripcion);
-        }
-        setCargando(false);
-        })
-        .catch((err) => {
-            // Error de red o conexión rechazada
-        setError(err.message);
-        setCargando(false);
-        });
-    }, []); // El array vacío [] asegura que se ejecute solo una vez al montar el componente
+        // Realizamos la petición GET al endpoint /user de tu microservicio en .NET
+        fetch(`${BASE_URL}/user`)
+            .then((res) => {
+                // Verificamos si la respuesta del servidor es correcta (status 200-299)
+                if (!res.ok) throw new Error('Error en la respuesta del servidor');
+                return res.json();
+            })
+            .then((data) => {
+                // Tu API devuelve un objeto con { codigo, descripcion, datos }
+                if (data.codigo === 200) {
+                    setDatos(data.datos); // Guardamos la lista de usuarios en el estado
+                } else {
+                    setError(data.descripcion || 'Error desconocido');
+                }
+                setCargando(false); // Detenemos el indicador de carga
+            })
+            .catch((err) => {
+                // Captura errores de red (como IP incorrecta o servidor apagado)
+                setError(err.message);
+                setCargando(false);
+            });
+    }, []); // El array vacío asegura que la carga ocurra solo al abrir la pantalla
 
-    //pantalla de carga, error o lista de usuarios
+    // Interfaz que se muestra mientras los datos están viajando desde el servidor
     if (cargando) {
-    return (
-        <View style={styles.center}>
-        <ActivityIndicator size="large" color="#4285F4" />
-        <Text>Cargando usuarios...</Text>
-        </View>
-    );
+        return (
+            <View style={styles.center}>
+                <ActivityIndicator size="large" color="#4285F4" />
+                <Text style={{ marginTop: 10 }}>Cargando usuarios...</Text>
+            </View>
+        );
     }
 
-    //pantalla de error si la llamada al API falla
+    // Interfaz de emergencia en caso de que ocurra un error de conexión o de datos
     if (error) {
-    return (
-        <View style={styles.center}>
-        <Text style={styles.error}>{error}</Text>
-        </View>
-    );
+        return (
+            <View style={styles.center}>
+                <Text style={styles.error}>❌ {error}</Text>
+            </View>
+        );
     }
 
-    //pantalla principal con la lista de usuarios
+    // Interfaz principal: Renderiza la lista de usuarios una vez obtenidos con éxito
     return (
-    <SafeAreaView style={styles.container}>
-        // Título de la pantalla
-        <Text style={styles.titulo}>Lista de Usuarios</Text>
-        <FlatList
-        //flatlist es el componente recomendado para listas largas en React Native, ya que optimiza el rendimiento renderizando solo los elementos visibles
-        
-        data={datos}
-        keyExtractor={(item) => item.usuarioId.toString()}
-        renderItem={({ item }) => (
-
-            //avatar con la inicial del nombre y un color de fondo, junto con la información del usuario
-            <View style={styles.card}>
-            <View style={[styles.avatar, { backgroundColor: item.colorAvatar || '#4285F4' }]}>
-                <Text style={styles.avatarTexto}>
-                {item.nombreCompleto?.charAt(0).toUpperCase()}
-                </Text>
-            </View>
+        <SafeAreaView style={styles.container}>
+            {/* Título principal de la pantalla */}
+            <Text style={styles.titulo}>Lista de Usuarios</Text>
             
-            <View style={styles.info}>
-                
-                <Text style={styles.nombre}>{item.nombreCompleto}</Text>
-                <Text style={styles.campo}>📧 {item.email}</Text>
-                <Text style={styles.campo}>📱 {item.telefono}</Text>
-                <Text style={styles.campo}>🪪 {item.identificacion}</Text>
-            </View>
-            </View>
-        )}
-        />
-    </SafeAreaView>
+            <FlatList
+                /* FlatList es el componente recomendado para listas, ya que solo renderiza 
+                   lo que el usuario ve en pantalla, ahorrando memoria en el celular.
+                */
+                data={datos}
+                // Usamos el ID del usuario como clave única para cada fila
+                keyExtractor={(item) => item.usuarioId?.toString() || Math.random().toString()}
+                renderItem={({ item }) => (
+                    // Cada usuario se muestra dentro de una tarjeta (Card)
+                    <View style={styles.card}>
+                        {/* Avatar circular con la inicial del nombre */}
+                        <View style={[styles.avatar, { backgroundColor: item.colorAvatar || '#4285F4' }]}>
+                            <Text style={styles.avatarTexto}>
+                                {item.nombreCompleto?.charAt(0).toUpperCase() || '?'}
+                            </Text>
+                        </View>
+                        
+                        {/* Contenedor para la información textual del usuario */}
+                        <View style={styles.info}>
+                            <Text style={styles.nombre}>{item.nombreCompleto}</Text>
+                            <Text style={styles.campo}>📧 {item.email}</Text>
+                            <Text style={styles.campo}>📱 {item.telefono}</Text>
+                            <Text style={styles.campo}>🪪 {item.identificacion}</Text>
+                        </View>
+                    </View>
+                )}
+            />
+        </SafeAreaView>
     );
 }
-//estilos para la pantalla de usuarios
+
+// Configuración de los estilos visuales (CSS-in-JS)
 const styles = StyleSheet.create({
-    //container es el estilo principal que envuelve toda la pantalla
+    // Estilo para el contenedor principal que ocupa toda la pantalla
     container: { flex: 1, backgroundColor: '#f0f0f0', padding: 16 },
-    //se usa para centrar el contenido en la pantalla, tanto para la carga como para el error
-    center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    //estilo para el título principal de la pantalla
-    titulo: { fontSize: 22, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' },
-    //estilo para cada tarjeta de usuario en la lista
+    // Centra el contenido (usado para ActivityIndicator y Errores)
+    center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
+    // Estilo para el encabezado de la lista
+    titulo: { fontSize: 22, fontWeight: 'bold', marginBottom: 16, textAlign: 'center', color: '#333' },
+    // Diseño de la tarjeta de cada usuario
     card: {
-    backgroundColor: '#fff', borderRadius: 12, padding: 14,
-    marginBottom: 12, flexDirection: 'row', alignItems: 'center',
-    elevation: 3,
+        backgroundColor: '#fff', 
+        borderRadius: 12, 
+        padding: 14,
+        marginBottom: 12, 
+        flexDirection: 'row', 
+        alignItems: 'center',
+        // Sombra para Android
+        elevation: 3,
+        // Sombra para iOS
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
     },
-    //estilo para el avatar de cada usuario
+    // Estilo para el círculo del avatar
     avatar: {
-    width: 50, height: 50, borderRadius: 25,
-    justifyContent: 'center', alignItems: 'center', marginRight: 12,
+        width: 50, height: 50, borderRadius: 25,
+        justifyContent: 'center', alignItems: 'center', marginRight: 12,
     },
-    //estilo para el texto dentro del avatar, que muestra la inicial del nombre
+    // Texto blanco y centrado dentro del avatar
     avatarTexto: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
+    // Contenedor de la info que crece para ocupar el espacio restante
     info: { flex: 1 },
-    //estilo para el nombre completo del usuario
+    // Resalta el nombre del usuario
     nombre: { fontSize: 16, fontWeight: 'bold', color: '#222', marginBottom: 4 },
-    //estilo para los campos de información del usuario (email, teléfono, identificación)
+    // Estilo para los datos secundarios (email, tel, etc.)
     campo: { fontSize: 13, color: '#555', marginBottom: 2 },
-    //estilo para mostrar el mensaje de error en caso de que la llamada al API falle
-    error: { color: 'red', fontSize: 16 },
+    // Estilo visual para los mensajes de error
+    error: { color: 'red', fontSize: 16, textAlign: 'center' },
 });
